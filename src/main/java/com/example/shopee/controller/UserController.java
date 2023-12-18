@@ -7,16 +7,18 @@ import com.example.shopee.enity.User;
 import com.example.shopee.repository.UserRepository;
 import com.example.shopee.util.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/user")
+@RestController()
+@RequestMapping("user")
 @Controller
 public class UserController {
 
     @Autowired
-    private UserRepository repository;
+    private  UserRepository repository;
     @Autowired
     private UserMapper mapper;
 
