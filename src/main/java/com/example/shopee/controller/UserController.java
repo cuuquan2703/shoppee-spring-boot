@@ -2,8 +2,8 @@ package com.example.shopee.controller;
 
 
 import com.example.shopee.dto.UserDto;
-import com.example.shopee.enity.USER_ROLE;
-import com.example.shopee.enity.User;
+import com.example.shopee.enity.user.ERole;
+import com.example.shopee.enity.user.User;
 import com.example.shopee.repository.UserRepository;
 import com.example.shopee.util.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,13 @@ public class UserController {
         return mapper.entityToDto(user);
     }
 
-    @PutMapping("/new")
-    public UserDto newUser() {
-        User user = new User();
-        user.setUsername("cquan");
-        user.setPassword("cquan");
-        user.setRole(USER_ROLE.NORMAL);
-        repository.save(user);
-        return mapper.entityToDto(user);
-    }
+    // @PutMapping("/new")
+    // public UserDto newUser() {
+    //     User user = new User();
+    //     user.setUsername("cquan");
+    //     user.setPassword("cquan");
+    //     user.setRole(ERole.NORMAL);
+    //     repository.save(user);
+    //     return mapper.entityToDto(user);
+    // }
 }

@@ -1,7 +1,8 @@
 package com.example.shopee.util;
 
 import com.example.shopee.dto.UserDto;
-import com.example.shopee.enity.User;
+import com.example.shopee.enity.user.User;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
