@@ -1,17 +1,14 @@
 package com.example.shopee.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.Column;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter@Setter
+@AllArgsConstructor@NoArgsConstructor
+@Builder
 public class ProductDto {
+
     private long id;
     private String productName;
     private float price;
