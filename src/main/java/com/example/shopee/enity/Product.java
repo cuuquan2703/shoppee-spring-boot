@@ -1,8 +1,11 @@
 package com.example.shopee.enity;
 
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+
 
 @Data
 @Getter@Setter
@@ -15,7 +18,7 @@ public class Product {
     @Id
     private long id;
 
-//    @Column(name="product_name",nullable = false)
+    @Column(name="product_name",nullable = false)
     private String productName;
 
 //    @Column(name="price",nullable = false)
