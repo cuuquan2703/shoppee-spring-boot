@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,5 +34,11 @@ public class ProductController {
     @RequestMapping("/{id}")
     public Mono<ProductDto> productById(@PathVariable Long id) {
         return service.findById(id);
+    }
+
+    @MessageMapping("/get_product")
+    @SendTo("/topic/products")
+    public String allProductWebSocet(String message) throws  Exception {
+        return "Hi there";
     }
 }
