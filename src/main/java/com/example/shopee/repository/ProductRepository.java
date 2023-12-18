@@ -8,9 +8,11 @@ import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.data.repository.reactive.ReactiveSortingRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 
 @Repository
 public interface ProductRepository extends ReactiveCrudRepository<Product, Long>, R2dbcRepository<Product, Long> {
     Flux<Product> findAllBy(Pageable pageable);
+    Mono<Product> findById(Long id);
 }
