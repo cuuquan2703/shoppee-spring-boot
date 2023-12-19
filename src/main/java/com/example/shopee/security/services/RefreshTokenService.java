@@ -16,7 +16,7 @@ import com.example.shopee.repository.UserRepository;
 
 @Service
 public class RefreshTokenService {
-  @Value("${bezkoder.app.jwtRefreshExpirationMs}")
+  @Value("${shopee.app.jwtRefreshExpirationMs}")
   private Long refreshTokenDurationMs;
 
   @Autowired
