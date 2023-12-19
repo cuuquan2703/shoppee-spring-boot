@@ -1,9 +1,14 @@
 package com.example.shopee.controller;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.shopee.dto.UserDto;
-import com.example.shopee.enity.USER_ROLE;
-import com.example.shopee.enity.User;
+import com.example.shopee.enity.user.User;
 import com.example.shopee.repository.UserRepository;
 import com.example.shopee.util.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,7 @@
 package com.example.shopee.dto;
 
-import com.example.shopee.enity.USER_ROLE;
+import com.example.shopee.enity.user.ERole;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,5 +14,5 @@ import lombok.Setter;
 public class UserDto {
     private long id;
     private String username;
-    private USER_ROLE role;
+    private ERole role;
 }

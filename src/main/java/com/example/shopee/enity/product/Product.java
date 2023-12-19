@@ -1,4 +1,4 @@
-package com.example.shopee.enity;
+package com.example.shopee.enity.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
