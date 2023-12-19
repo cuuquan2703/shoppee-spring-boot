@@ -11,25 +11,38 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Flux;
 
 
+
+// @Service
+// public class ProductService {
+//     @Autowired
+//     private ProductRepository repository;
+
+//     @Autowired
+//     private ProductMapper mapper;
+
+//     public Mono<Page<ProductDto>> findAllProducts(Pageable pageable) {
+//         return repository.findAllBy(pageable)
+//                 .map(u -> mapper.entityToDto(u))
+//                 .collectList()
+//                 .zipWith(repository.count())
+//                 .map(p -> new PageImpl<>(p.getT1(), pageable,p.getT2()));
+//     }
+
+//     public Mono<ProductDto> findById(Long id) {
+//         return repository.findById(id).map(u -> mapper.entityToDto(u));
+//     }
 @Service
-public class ProductService {
-    @Autowired
-    private ProductRepository repository;
+public interface ProductService {
+    Flux<ProductDto> getAllProduct();
 
-    @Autowired
-    private ProductMapper mapper;
+    Mono<ProductDto> getProductById(Long productId);
 
-    public Mono<Page<ProductDto>> findAllProducts(Pageable pageable) {
-        return repository.findAllBy(pageable)
-                .map(u -> mapper.entityToDto(u))
-                .collectList()
-                .zipWith(repository.count())
-                .map(p -> new PageImpl<>(p.getT1(), pageable,p.getT2()));
-    }
+    Mono<ProductDto> saveProduct(ProductDto productDto);
 
-    public Mono<ProductDto> findById(Long id) {
-        return repository.findById(id).map(u -> mapper.entityToDto(u));
-    }
+    Mono<Void> deleteProduct(Long productId);
+
+    Flux<ProductDto> searchProductByName(String query);
 }

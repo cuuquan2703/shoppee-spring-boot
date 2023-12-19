@@ -13,6 +13,10 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface ProductRepository extends ReactiveCrudRepository<Product, Long>, R2dbcRepository<Product, Long> {
+
+    @Query(value = "select * from product p where p.product_name like concat('%',:query,'%')")
+    Flux<Product> searchProductByProductName(String query);
+
     Flux<Product> findAllBy(Pageable pageable);
     Mono<Product> findById(Long id);
 }
