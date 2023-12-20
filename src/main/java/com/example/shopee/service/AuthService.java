@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +17,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import com.example.shopee.enity.user.ERole;
-import com.example.shopee.enity.user.RefreshToken;
-import com.example.shopee.enity.user.Role;
-import com.example.shopee.enity.user.User;
-import com.example.shopee.exception.TokenRefreshException;
+import com.example.shopee.entity.ERole;
+import com.example.shopee.entity.Role;
+import com.example.shopee.entity.User;
 import com.example.shopee.payload.request.LoginRequest;
 import com.example.shopee.payload.request.SignupRequest;
 import com.example.shopee.payload.response.MessageResponse;
@@ -27,32 +29,28 @@ import com.example.shopee.payload.response.UserInfoResponse;
 import com.example.shopee.repository.RoleRepository;
 import com.example.shopee.repository.UserRepository;
 import com.example.shopee.security.jwt.JwtUtils;
-import com.example.shopee.security.services.RefreshTokenService;
 import com.example.shopee.security.services.UserDetailsImpl;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class AuthService {
 
-  private final AuthenticationManager authenticationManager;
-  private final JwtUtils jwtUtils;
-  private final UserRepository userRepository;
-  private final RoleRepository roleRepository;
-  private final PasswordEncoder encoder;
-  private final RefreshTokenService refreshTokenService;
+  @Autowired
+  AuthenticationManager authenticationManager;
 
-  public AuthService(AuthenticationManager authenticationManager, JwtUtils jwtUtils, UserRepository userRepository,
-      RoleRepository roleRepository, RefreshTokenService refreshTokenService, PasswordEncoder encoder) {
-    this.authenticationManager = authenticationManager;
-    this.jwtUtils = jwtUtils;
-    this.userRepository = userRepository;
-    this.roleRepository = roleRepository;
-    this.refreshTokenService = refreshTokenService;
-    this.encoder = encoder;
-  }
+  @Autowired
+  UserRepository userRepository;
 
-  public ResponseEntity<?> authenticateUser(LoginRequest loginRequest) {
+  @Autowired
+  RoleRepository roleRepository;
+
+  @Autowired
+  PasswordEncoder encoder;
+
+  @Autowired
+  JwtUtils jwtUtils;
+
+  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+
     Authentication authentication = authenticationManager
         .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -66,20 +64,14 @@ public class AuthService {
         .map(item -> item.getAuthority())
         .collect(Collectors.toList());
 
-    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
-
-    ResponseCookie jwtRefreshCookie = jwtUtils.generateRefreshJwtCookie(refreshToken.getToken());
-
-    return ResponseEntity.ok()
-        .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-        .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
         .body(new UserInfoResponse(userDetails.getId(),
             userDetails.getUsername(),
             userDetails.getEmail(),
             roles));
   }
 
-  public ResponseEntity<?> registerUser(SignupRequest signUpRequest) {
+  public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
     }
@@ -97,20 +89,20 @@ public class AuthService {
     Set<Role> roles = new HashSet<>();
 
     if (strRoles == null) {
-      Role userRole = roleRepository.findByName(ERole.NORMAL)
+      Role userRole = roleRepository.findByName(ERole.ROLE_USER)
           .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
       roles.add(userRole);
     } else {
       strRoles.forEach(role -> {
         switch (role) {
           case "admin":
-            Role adminRole = roleRepository.findByName(ERole.ADMIN)
+            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(adminRole);
             break;
 
           default:
-            Role userRole = roleRepository.findByName(ERole.NORMAL)
+            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
         }
@@ -124,39 +116,9 @@ public class AuthService {
   }
 
   public ResponseEntity<?> logoutUser() {
-    Object principle = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if (principle.toString() != "anonymousUser") {
-      Long userId = ((UserDetailsImpl) principle).getId();
-      refreshTokenService.deleteByUserId(userId);
-    }
-
-    ResponseCookie jwtCookie = jwtUtils.getCleanJwtCookie();
-    ResponseCookie jwtRefreshCookie = jwtUtils.getCleanJwtRefreshCookie();
-
-    return ResponseEntity.ok()
-        .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-        .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
+    ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+    return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
         .body(new MessageResponse("You've been signed out!"));
   }
 
-  public ResponseEntity<?> refreshtoken(HttpServletRequest request) {
-    String refreshToken = jwtUtils.getJwtRefreshFromCookies(request);
-
-    if ((refreshToken != null) && (refreshToken.length() > 0)) {
-      return refreshTokenService.findByToken(refreshToken)
-          .map(refreshTokenService::verifyExpiration)
-          .map(RefreshToken::getUser)
-          .map(user -> {
-            ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(user);
-
-            return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(new MessageResponse("Token is refreshed successfully!"));
-          })
-          .orElseThrow(() -> new TokenRefreshException(refreshToken,
-              "Refresh token is not in database!"));
-    }
-
-    return ResponseEntity.badRequest().body(new MessageResponse("Refresh Token is empty!"));
-  }
 }

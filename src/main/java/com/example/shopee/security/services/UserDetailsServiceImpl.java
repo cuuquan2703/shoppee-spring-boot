@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.shopee.enity.user.User;
+import com.example.shopee.entity.User;
 import com.example.shopee.repository.UserRepository;
 
 @Service
@@ -23,4 +23,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     return UserDetailsImpl.build(user);
   }
+
 }

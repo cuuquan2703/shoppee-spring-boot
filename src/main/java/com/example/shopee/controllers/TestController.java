@@ -1,4 +1,4 @@
-package com.example.shopee.controller;
+package com.example.shopee.controllers;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/test")
 public class TestController {
-  @GetMapping("/all")
+  @GetMapping("/public")
   public String allAccess() {
     return "Public Content.";
   }
@@ -19,10 +19,9 @@ public class TestController {
     return "User Content.";
   }
 
-
   @GetMapping("/admin")
   @PreAuthorize("hasRole('ADMIN')")
   public String adminAccess() {
-    return "Admin Board.";
+    return "Admin Content.";
   }
 }

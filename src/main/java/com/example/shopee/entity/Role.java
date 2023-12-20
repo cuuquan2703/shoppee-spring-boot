@@ -1,6 +1,6 @@
-package com.example.shopee.enity.user;
+package com.example.shopee.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "roles")
