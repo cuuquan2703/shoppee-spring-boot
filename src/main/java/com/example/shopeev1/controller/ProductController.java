@@ -41,6 +41,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public String deleteProduct(@PathVariable("id") Long id){
+        productService.deleteProduct(id);
         return "Delete success product have id: "+ id;
     }
 
